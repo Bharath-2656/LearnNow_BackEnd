@@ -148,8 +148,10 @@ app.put('/usercourse/:userid/:courseid/:price', (req, res) =>
 
 });
 
+//const auth = 
+
 //Authenticating the user upon login and generating refresh and access token
-app.post('/authenticate', (req, res, next) =>
+app.post('/authenticate', async (req, res, next) =>
 {
     passport.authenticate('local', (err, user, info) =>
     {
@@ -164,7 +166,7 @@ app.post('/authenticate', (req, res, next) =>
 
             User.findOneAndUpdate({ email: req.body.email }, { refreshtoken: user.generateRefreshToken() }, (err, doc) =>
             {
-                if (!err) { return res.status(200).json({ "token": user.generateJwt(), }); }
+                if (!err) { return res.status(200).json({ "token": user.generateJwt(), "refreshtoken": user.generateRefreshToken() }); }
                 else { console.log(`Error in updating user`); }
             });
 
