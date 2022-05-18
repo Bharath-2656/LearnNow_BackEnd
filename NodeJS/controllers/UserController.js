@@ -173,7 +173,7 @@ app.post('/authenticate', async (req, res, next) =>
 
         }
         else return res.status(404).json(info);
-    })(req, res);
+    })(req, res, next);
 });
 
 
