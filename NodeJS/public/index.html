@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <!-- Latest compiled JavaScript -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+</head>
+    
+<link rel="stylesheet" href="stylesheets/style.css">
+<script src="homepage.js"></script>
+
+
+<body>
+    <section>
+        <nav>
+            <div class="nav-right">
+                <ul>
+                    <li><button onclick="window.location='register.jsp';">Register</button></li>
+                    <li><button onclick="window.location='login.html';">Login</button></li>
+                    <li><button onclick="logout()">Logout</button></li>
+                </ul>
+            </div> 
+        </nav>
+    </section>
+    <div  class="main">
+        <h1>Welcome Student</h1>
+        <h2>Add Details</h2>
+        
+              <form name="form" class="formOne" onsubmit="submit()" action="add_user" method="post">   
+            <!-- <label path="id">ID</label> <input type="text" name="id"><br> -->
+
+            <!-- <div class="formOne">  -->
+            <label>NAME</label><input id="name" type="text" name="name" autocapitalize="sentences"><br>
+            <div class="error" id="nameError"></div>
+            <label>AGE</label> <input id="age" type="number" name="age"><br>
+            <div class="error" id="ageError"></div>
+            <label>EMAIL</label> <input id="email" type="text" name="email" spellcheck="false" ><br>
+            <div class="error" id="emailError"></div>
+            <label>PASSWORD</label> <input id="password" type="password" name="password"><br>
+            <div class="error" id="passwordError"></div>
+            <label>CONFIRM PASSWORD</label> <input id="confirm_password" type="password" name="confirm_password"><br>
+            <div class="error" id="confirmpasswordError"></div>
+            <!-- <button id="button" onclick="submit()">Register</button> -->
+            <input type="submit" id="button" onclick="submit()" value="Register">
+            <br>
+            </div>
+    </div>
+   <!--</form>-->
+</body>
+
+</html>
