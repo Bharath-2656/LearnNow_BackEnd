@@ -14,7 +14,7 @@ const loadash = require('lodash');
 const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv").config();
-const stripe = require("stripe")(sk_test_51KzDD9SFGZJvDt6TYvB963ObQApw5N2P1IPcWJkwrzkfENlx2a4Ir9mFhxEdiPncNQvVSzPLQGeIDTrHYyKeSJY600yJgkFjeE);
+const stripe = require("stripe")('sk_test_51KzDD9SFGZJvDt6TYvB963ObQApw5N2P1IPcWJkwrzkfENlx2a4Ir9mFhxEdiPncNQvVSzPLQGeIDTrHYyKeSJY600yJgkFjeE');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
