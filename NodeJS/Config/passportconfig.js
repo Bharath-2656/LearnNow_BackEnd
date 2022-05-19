@@ -3,9 +3,12 @@ const localStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 var {User} = require('../models/UserModel');
 const { Instructor } = require('../models/InstructorModel');
+const app = require('../controllers/CourseController');
 
+app.use(passport.initialize());
+app.use(passport.session());
 
-passport.use('local',
+passport.use(
     new localStrategy({ usernameField: 'email' },
         (username, password, done) => {
             User.findOne({ email: username },

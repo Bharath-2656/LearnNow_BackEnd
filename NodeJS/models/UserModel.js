@@ -44,10 +44,7 @@ const UserSchema = new mongoose.Schema({
       type: String,
       default: 'user',
     },
-    refreshtoken:{
-      type: String,
-      default: 'refresh_token'
-    },
+    
     areaofintrest: {
       type: [],
     },
@@ -64,7 +61,6 @@ const UserSchema = new mongoose.Schema({
     return emailRegex.test(val);
 }, 'Invalid e-mail.');
 
-//password hashing
 UserSchema.pre('save', function(next){
   bcrypt.genSalt(10,(err,salt) => {
     bcrypt.hash(this.password,salt,(err, hash) => {
@@ -95,15 +91,15 @@ UserSchema.methods.verifyPassword = function (password) {
 
 UserSchema.methods.generateJwt = function () {
   return jwt.sign({ userid: this.userid, role: 'user'},
-      'SECRET#123',
+      process.env.JWT_SECRET,
   {
-      expiresIn: '1m'
+      expiresIn: process.env.JWT_EXP
   });
 }
 
 UserSchema.methods.generateRefreshToken = function() {
 
-  return jwt.sign({ userid: this.userid, role: 'user'}, 'RefreshToken', { expiresIn:'30d' });
+  return jwt.sign({ userid: this.userid, role: 'user'}, process.env.REFRESH_TOKEN_SECRET, { expiresIn:process.env.REFRESH_TOKEN_EXPIRY });
 }
 
   const User = mongoose.model("User", UserSchema);

@@ -122,25 +122,25 @@ app.get('/getinstructorid', (req,res,next) => {
 app.post('/authenticate', (req, res, next) =>
 {
     const password = req.body.password;
-        Instructor.findOne({ email: req.body.email },
-            (err, instructor) => {
-                if (err)
-                    return (err); 
-                else if (!instructor)
-                    return res.status(404).json( { message: 'Email is not registered' });
-                else if (!instructor.verifyPassword(password))
-                    return res.status(404).json({ message: 'Wrong password.' });
-                else
-                    return res.status(200).json( { "token": instructor.generateJwt(), });
-            });
+    Instructor.findOne({ email: req.body.email },
+        (err, instructor) => {
+            if (err)
+                return (err); 
+            else if (!instructor)
+                return res.status(404).json( { message: 'Email is not registered' });
+            else if (!instructor.verifyPassword(password))
+                return res.status(404).json({ message: 'Wrong password.' });
+            else
+                return res.status(200).json( { "token": instructor.generateJwt(), });
         });
+});
 
 //Generating access token if refersh token is valid and access token is expired
-app.post('/token/:instructorid', async (req,res,next) =>
+app.post('/token/:instructorid/:refreshtoken', async (req,res,next) =>
 {
-    const instructorfortoken = await Instructor.findOne({ instructorid: req.params.instructorid }, 'instructorid refreshtoken').exec();
+    const instructorfortoken = await Instructor.findOne({ instructorid: req.params.instructorid }, 'instructorid').exec();
     
-    jwt.verify(instructorfortoken.refreshtoken,process.env.REFRESH_TOKEN_SECRET,
+    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
             if (err)
                 return res.status(500).send({ auth: false, message: 'Token authentication failed.' });
