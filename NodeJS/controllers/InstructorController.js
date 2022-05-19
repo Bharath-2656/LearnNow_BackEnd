@@ -121,30 +121,19 @@ app.get('/getinstructorid', (req,res,next) => {
 
 app.post('/authenticate', (req, res, next) =>
 {
-    passport.authenticate('local-instructor', (err, instructor, info) =>
-    {
-        if (err) return res.status(400).json(err);
-        else if (instructor)
-            {
-                var instructor1 = {
-                    refreshtoken: instructor.generateRefreshToken()
-                };
-                
-                instructoridforrefresh = req.body.email;
-                
-                const refresh_token = instructor.generateRefreshToken();
-                
-                Instructor.findOneAndUpdate({ email: req.body.email }, {  refreshtoken: instructor.generateRefreshToken() },(err, doc) =>
-                {
-                    // if (!err) { res.send(doc); }
-                    // else { console.log(`Error in updating user`); }
-                    
-                });
-                return res.status(200).json( { "token": instructor.generateJwt(), });
-            }
-        else return res.status(404).json(info);
-    })(req, res);
-});
+    const password = req.body.password;
+        Instructor.findOne({ email: req.body.email },
+            (err, instructor) => {
+                if (err)
+                    return (err); 
+                else if (!instructor)
+                    return res.status(404).json( { message: 'Email is not registered' });
+                else if (!instructor.verifyPassword(password))
+                    return res.status(404).json({ message: 'Wrong password.' });
+                else
+                    return res.status(200).json( { "token": instructor.generateJwt(), });
+            });
+        });
 
 //Generating access token if refersh token is valid and access token is expired
 app.post('/token/:instructorid', async (req,res,next) =>

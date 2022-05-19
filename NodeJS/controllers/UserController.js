@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const nodemailer = require('nodemailer');
 var { AreaOfInterest } = require('../models/areaOfInterestModel');
 const courseController = require("../controllers/CourseController")
-const passport = require('passport');
+//const passport = require('passport');
 const jwtHelper = require('../Config/jwtHelper');
 var router = express.Router();
 const app = express();
@@ -153,28 +153,23 @@ app.put('/usercourse/:userid/:courseid/:price', (req, res) =>
 //Authenticating the user upon login and generating refresh and access token
 app.post('/authenticate', async (req, res, next) =>
 {
-    passport.authenticate('local', (err, user, info) =>
-    {
-        if (err) return res.status(400).json(err);
-        else if (user)
-        {
-            var user1 = {
-                refreshtoken: user.generateRefreshToken()
-
-            };
-
-
-            User.findOneAndUpdate({ email: req.body.email }, { refreshtoken: user.generateRefreshToken() }, (err, doc) =>
-            {
-                if (!err) { return res.status(200).json({ "token": user.generateJwt(), "refreshtoken": user.generateRefreshToken() }); }
-                else { console.log(`Error in updating user`); }
-            });
-
-
-        }
-        else return res.status(404).json(info);
-    })(req, res, next);
-});
+    
+   const password = req.body.password;
+        User.findOne({ email: req.body.email },
+            (err, user) => {
+                if (err)
+                    return (err); 
+                else if (!user)
+                    return res.status(404).json( { message: 'Email is not registered' });
+                else if (!user.verifyPassword(password))
+                    return res.status(404).json({ message: 'Wrong password.' });
+                else
+                    {
+                 return res.status(200).json({ "token": user.generateJwt(), "refreshtoken": user.generateRefreshToken() })
+                
+            }
+        });
+    });
 
 
 
