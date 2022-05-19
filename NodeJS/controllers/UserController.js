@@ -15,8 +15,6 @@ const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const cookieSession = require('cookie-session');
-require('../Config/OAuth');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -173,41 +171,6 @@ app.post('/authenticate', async (req, res, next) =>
         });
 });
 
-app.use(cookieSession({
-    name: 'google-auth-session',
-    keys: ['key1', 'key2']
-}))
-
-app.get('/api/auth/google',
-    passport.authenticate('google', {
-
-        scope:
-            ['email', 'profile']
-    }
-    ), (req, res) =>
-{
-    res.setHeader("Access-Control-Allow-Origin", "*")
-});
-
-app.get("/failed", (req, res) =>
-{
-    res.send("Failed")
-})
-app.get("/success", (req, res) =>
-{
-    res.send(`Welcome ${req.user.email}`)
-})
-
-app.get('/google/callback',
-    passport.authenticate('google', {
-        failureRedirect: '/failed',
-    }),
-    function (req, res)
-    {
-        res.redirect('/success')
-
-    }
-);
 
 //Generating access token if refersh token is valid and access token is expired
 app.post('/token/:userid/:refreshtoken', async (req, res, next) =>
