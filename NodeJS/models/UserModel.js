@@ -91,15 +91,15 @@ UserSchema.methods.verifyPassword = function (password) {
 
 UserSchema.methods.generateJwt = function () {
   return jwt.sign({ userid: this.userid, role: 'user'},
-      process.env.JWT_SECRET,
+      'SECRET#123',
   {
-      expiresIn: process.env.JWT_EXP
+      expiresIn: '2m'
   });
 }
 
 UserSchema.methods.generateRefreshToken = function() {
 
-  return jwt.sign({ userid: this.userid, role: 'user'}, process.env.REFRESH_TOKEN_SECRET, { expiresIn:process.env.REFRESH_TOKEN_EXPIRY });
+  return jwt.sign({ userid: this.userid, role: 'user'}, 'RefreshToken', { expiresIn:'30d' });
 }
 
   const User = mongoose.model("User", UserSchema);

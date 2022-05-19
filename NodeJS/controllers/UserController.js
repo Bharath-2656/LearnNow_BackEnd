@@ -14,7 +14,7 @@ const loadash = require('lodash');
 const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv").config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(sk_test_51KzDD9SFGZJvDt6TYvB963ObQApw5N2P1IPcWJkwrzkfENlx2a4Ir9mFhxEdiPncNQvVSzPLQGeIDTrHYyKeSJY600yJgkFjeE);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -23,19 +23,6 @@ app.use(cors());
 app.use(router);
 app.use(express.json());
 
-
-// var allowCrossDomain = function(req, res, next) {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-//     if ('OPTIONS' == req.method) {
-//     	res.send(200);
-//     }
-//     else {
-//     	next();
-//     }
-// }; 
 
 //Getting all users
 app.get('/users', async (req, res) =>
@@ -176,7 +163,7 @@ app.post('/authenticate', async (req, res, next) =>
 app.post('/token/:userid/:refreshtoken', async (req, res, next) =>
 {
     const userfortoken = await User.findOne({ userid: req.params.userid }, 'userid').exec();
-    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
+    jwt.verify(req.params.refreshtoken, 'RefreshToken',
         (err, decoded) =>
         {
             if (err)
@@ -338,7 +325,7 @@ app.post('/course_mail', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: process.env.pass,
+            pass: '@pplEisred123',
         },
         tls: {
             rejectUnauthorized: false,
@@ -376,7 +363,7 @@ app.post('/user_mail', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: process.env.pass,
+            pass: '@pplEisred123',
         },
         tls: {
             rejectUnauthorized: false,

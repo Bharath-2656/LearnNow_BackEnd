@@ -94,15 +94,15 @@ InstructorSchema.methods.verifyPassword = function (password)
 InstructorSchema.methods.generateJwt = function ()
 {
   return jwt.sign({ instructorid: this.instructorid, role: 'instructor' },
-    process.env.JWT_SECRET,
+    'SECRET#123',
     {
-      expiresIn: process.env.JWT_EXP
+      expiresIn: '2m'
     });
 }
 
 InstructorSchema.methods.generateRefreshToken = function ()
 {
-  return jwt.sign({ instructorid: this.instructorid, role: 'instructor' }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
+  return jwt.sign({ instructorid: this.instructorid, role: 'instructor' }, 'RefreshToken', { expiresIn: '30d' });
 }
 
 const Instructor = mongoose.model("Instructor", InstructorSchema);
