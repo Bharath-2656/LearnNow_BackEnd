@@ -6,7 +6,11 @@ var router = express.Router();
 const app = express();
 const jwt = require('jsonwebtoken');
 const { Course} = require("../models/CourseModel");
-
+const cookieSession = require('cookie-session');
+var { token } = require('morgan');
+require('../Config/OAuth');
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(router);
@@ -140,7 +144,7 @@ app.post('/token/:instructorid/:refreshtoken', async (req,res,next) =>
 {
     const instructorfortoken = await Instructor.findOne({ instructorid: req.params.instructorid }, 'instructorid').exec();
     
-    jwt.verify(req.params.refreshtoken, 'RefreshToken',
+    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
             if (err)
                 return res.status(500).send({ auth: false, message: 'Token authentication failed.' });
