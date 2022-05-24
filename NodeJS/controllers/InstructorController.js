@@ -144,7 +144,7 @@ app.post('/token/:instructorid/:refreshtoken', async (req,res,next) =>
 {
     const instructorfortoken = await Instructor.findOne({ instructorid: req.params.instructorid }, 'instructorid').exec();
     
-    jwt.verify(req.params.refreshtoken, 'RefreshToken',
+    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
             if (err)
                 return res.status(500).send({ auth: false, message: 'Token authentication failed.' });
@@ -160,11 +160,11 @@ app.post('/deletetoken/:instructorid', (req,res) => {
     var instructor = {
         refreshtoken: 'refresh_token',
     };
-    console.log("hi");
+
     Instructor.findOneAndUpdate({ instructorid: req.params.instructorid }, { $set: instructor }, { new: true }, (err, doc) =>
     {
         if (!err) { 
-            console.log("hello");
+
             res.send(doc); }
         else { console.log(`Error in updating user`); }
     });

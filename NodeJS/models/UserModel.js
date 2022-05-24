@@ -69,16 +69,6 @@ UserSchema.pre('save', function(next){
   });
 });
 
-UserSchema.pre('updateOne', function(next){
-  console.log(this.password);
-  bcrypt.genSalt(10,(err,salt) => {
-    bcrypt.hash(this.password,salt,(err, hash) => {
-      this.password=hash;
-      this.saltSecret=this.salt;
-      next();
-    });
-  });
-});
 
 UserSchema.pre("save", function (next) {
   var docs = this;
@@ -99,15 +89,15 @@ UserSchema.methods.verifyPassword = function (password) {
 
 UserSchema.methods.generateJwt = function () {
   return jwt.sign({ userid: this.userid, role: 'user'},
-      'SECRET#123',
+      process.env.JWT_SECRET,
   {
-      expiresIn: '3m'
+      expiresIn: process.env.JWT_EXP
   });
 }
 
 UserSchema.methods.generateRefreshToken = function() {
 
-  return jwt.sign({ userid: this.userid, role: 'user'}, 'RefreshToken', { expiresIn:'30d' });
+  return jwt.sign({ userid: this.userid, role: 'user'}, process.env.REFRESH_TOKEN_SECRET, { expiresIn:process.env.REFRESH_TOKEN_EXPIRY });
 }
 
   const User = mongoose.model("User", UserSchema);

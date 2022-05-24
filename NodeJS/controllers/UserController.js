@@ -15,7 +15,7 @@ const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotenv = require("dotenv").config();
-const stripe = require("stripe")('sk_test_51KzDD9SFGZJvDt6TYvB963ObQApw5N2P1IPcWJkwrzkfENlx2a4Ir9mFhxEdiPncNQvVSzPLQGeIDTrHYyKeSJY600yJgkFjeE');
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const cookieSession = require('cookie-session');
 var { token } = require('morgan');
 require('../Config/OAuth');
@@ -144,7 +144,7 @@ app.put('/usercourse/:userid/:courseid/:price', (req, res) =>
     var user = {
         courseid: req.params.courseid,
     };
-    console.log(req.params.price);
+
     User.findOneAndUpdate({ userid: req.params.userid }, { $addToSet: user }, { new: true }, (err, doc) =>
     {
         
@@ -220,7 +220,7 @@ app.get('/google/callback',
 
 app.get('/googleauthentication/:userid', async(req, res, next) =>
 {
-    console.log(req.params.userid);
+
     User.findOne({userid : req.params.userid},(err, user) => {
     
     return res.status(200).json({ "token": user.generateJwt(), "refreshtoken": user.generateRefreshToken() })
@@ -231,7 +231,7 @@ app.get('/googleauthentication/:userid', async(req, res, next) =>
 app.post('/token/:userid/:refreshtoken', async (req, res, next) =>
 {
     const userfortoken = await User.findOne({ userid: req.params.userid }, 'userid').exec();
-    jwt.verify(req.params.refreshtoken, 'RefreshToken',
+    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) =>
         {
             if (err)
@@ -313,7 +313,7 @@ app.post('/payment/:price', async (req, res) =>
 {
     try
     {
-        console.log(req.body.token);
+  
         token = req.body.token;
         price = req.body.price;
       
@@ -387,6 +387,31 @@ app.get('/usercourse', async (req, res) =>
         });
 });
 
+app.get('/usercourseonuser', async (req, res) =>
+{
+    User.aggregate([
+        {
+            $lookup: {
+                from: "courses",
+                localField: "courseid",
+                foreignField: "routerlink",
+                as: "user_courses",
+            },
+        },
+        // {
+        //     $unwind: "$user_courses",
+        // },
+    ])
+        .then((result) =>
+        {
+            //console.log(JSON.stringify(result));
+            res.send(result);
+        })
+        .catch((error) =>
+        {
+            console.log(error);
+        });
+});
 
 //Sending mail upon enrollment of a course
 app.post('/course_mail', async (req, res) =>
@@ -396,7 +421,7 @@ app.post('/course_mail', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: '@pplEisred123',
+            pass: process.env.pass,
         },
         tls: {
             rejectUnauthorized: false,
@@ -404,8 +429,8 @@ app.post('/course_mail', async (req, res) =>
     });
 
     let mailOptions = {
-        from: "bharathstarck@gmail.com",
-        to: "bharath2000madhu@gmail.com",
+        from: "bharath2000madhu @gmail.com",
+        to: "bharathstarck@gmail.com",
         subject: "Confirmation of enrollemnt",
         // html:{path: `http://localhost:4200/user/confirmenrollment`}
         text: "You have successfully enrolled a course on the LearnNow! application",
@@ -434,7 +459,7 @@ app.post('/user_mail', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: '@pplEisred123',
+            pass: process.env.pass,
         },
         tls: {
             rejectUnauthorized: false,
@@ -442,8 +467,8 @@ app.post('/user_mail', async (req, res) =>
     });
 
     let mailOptions = {
-        from: "bharathstarck@gmail.com",
-        to: "bharath2000madhu@gmail.com",//to be changed
+        from: "bharath2000madhu@gmail.com",
+        to: "bharathstarck@gmail.com",//to be changed
         subject: "Confirmation of Registration",
         // html:{path: `http://localhost:4200/user/confirmenrollment`}
         text: "Dear " + req.body.name + " you have successfully registered on the LearnNow application.\n Please login to continue"
@@ -471,7 +496,7 @@ app.get('/forgotpassword_mail/:email', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: '@pplEisred123',
+            pass: process.env.pass,
         },
         tls: {
             rejectUnauthorized: false,
@@ -479,7 +504,7 @@ app.get('/forgotpassword_mail/:email', async (req, res) =>
     });
 
     let mailOptions = {
-        from: "bharathstarck@gmail.com",
+        from: "bharath2000madhu@gmail.com",
         to:  req.params.email,  //"bharath2000madhu@gmail.com",//to be changed
         subject: "Confirmation of Registration",
         // html:{path: `http://localhost:4200/user/confirmenrollment`}
@@ -499,12 +524,6 @@ app.get('/forgotpassword_mail/:email', async (req, res) =>
     res.json({
         data: otp,
     });
-});
-
-app.get('/verifyotp/:otp',  (req, res) =>
-{
-    console.log(req.params.otp);
-    
 });
 
 app.post('/resetpassword/:email/:password', async (req, res) =>
