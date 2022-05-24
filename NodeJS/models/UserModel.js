@@ -69,6 +69,17 @@ UserSchema.pre('save', function(next){
   });
 });
 
+UserSchema.pre('updateOne', function(next){
+  console.log(this.password);
+  bcrypt.genSalt(10,(err,salt) => {
+    bcrypt.hash(this.password,salt,(err, hash) => {
+      this.password=hash;
+      this.saltSecret=this.salt;
+      next();
+    });
+  });
+});
+
 UserSchema.pre("save", function (next) {
   var docs = this;
   mongoose
@@ -90,7 +101,7 @@ UserSchema.methods.generateJwt = function () {
   return jwt.sign({ userid: this.userid, role: 'user'},
       'SECRET#123',
   {
-      expiresIn: '2m'
+      expiresIn: '3m'
   });
 }
 

@@ -21,4 +21,3 @@ module.exports.verifyJwtToken = (req, res, next) => {
         )
     }
 }
-

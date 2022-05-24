@@ -135,7 +135,7 @@ app.post('/authenticate', (req, res, next) =>
             else if (!instructor.verifyPassword(password))
                 return res.status(404).json({ message: 'Wrong password.' });
             else
-                return res.status(200).json( { "token": instructor.generateJwt(), });
+                return res.status(200).json( { "token": instructor.generateJwt(),"refreshtoken": instructor.generateRefreshToken() });
         });
 });
 

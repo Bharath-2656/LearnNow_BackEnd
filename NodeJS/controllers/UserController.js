@@ -13,12 +13,14 @@ const app = express();
 const loadash = require('lodash');
 const cors = require("cors");
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const dotenv = require("dotenv").config();
 const stripe = require("stripe")('sk_test_51KzDD9SFGZJvDt6TYvB963ObQApw5N2P1IPcWJkwrzkfENlx2a4Ir9mFhxEdiPncNQvVSzPLQGeIDTrHYyKeSJY600yJgkFjeE');
 const cookieSession = require('cookie-session');
 var { token } = require('morgan');
 require('../Config/OAuth');
 var cookieParser = require('cookie-parser');
+const { has } = require('lodash');
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -258,7 +260,7 @@ app.post('/deletetoken/:userid', (req, res) =>
 //getting all userprofiles Admin access
 app.get('/userprofile', (req, res, next) =>
 {
-    User.findOne({ userid: req.userid },
+    User.findOne({ userid: req.body.userid },
         (err, user) =>
         {
             if (!user)
@@ -311,9 +313,10 @@ app.post('/payment/:price', async (req, res) =>
 {
     try
     {
-        //console.log(req.body.token);
+        console.log(req.body.token);
         token = req.body.token;
         price = req.body.price;
+      
         const customer = stripe.customers
             .create({
                 email: "bharathstarck@gmail.com",
@@ -324,12 +327,13 @@ app.post('/payment/:price', async (req, res) =>
             {
                 //console.log(customer);
                 //return stripe.charges.create({
+                    
                 return stripe.paymentIntents.create({
                     amount: req.params.price,
                     description: "Payment for course enrollment",
                     currency: "inr",
-            
                     customer: customer.id,
+                    confirm: true,
                 });
             })
             .then((charge) =>
@@ -424,7 +428,7 @@ app.post('/course_mail', async (req, res) =>
 //Sending mail upon successful registeration to the application 
 app.post('/user_mail', async (req, res) =>
 {
-
+    
     //link="http://"
     let transprter = nodemailer.createTransport({
         service: "gmail",
@@ -458,6 +462,64 @@ app.post('/user_mail', async (req, res) =>
     res.send("Email sent")
 });
 
+app.get('/forgotpassword_mail/:email', async (req, res) =>
+{
+   var otp = Math.floor(100000 + Math.random() * 900000);
+   
+    //link="http://"
+    let transprter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: "bharathstarck@gmail.com",
+            pass: '@pplEisred123',
+        },
+        tls: {
+            rejectUnauthorized: false,
+        }
+    });
 
+    let mailOptions = {
+        from: "bharathstarck@gmail.com",
+        to:  req.params.email,  //"bharath2000madhu@gmail.com",//to be changed
+        subject: "Confirmation of Registration",
+        // html:{path: `http://localhost:4200/user/confirmenrollment`}
+        text: "You have requested for reseting password please verify the following OTP and continue to rest the password \n OTP: " + otp
+    }
+    transprter.sendMail(mailOptions, function (err, success)
+    {
+        if (err)
+        {
+            console.log(err);
+        }
+        else 
+        {
+            console.log("Email has been sent sucessfully");
+        }
+    });
+    res.json({
+        data: otp,
+    });
+});
+
+app.get('/verifyotp/:otp',  (req, res) =>
+{
+    console.log(req.params.otp);
+    
+});
+
+app.post('/resetpassword/:email/:password', async (req, res) =>
+{
+    var user = new User({
+        password: req.params.password,
+    })
+ 
+    var password = await bcrypt.hash(req.params.password, 10);
+    console.log(password);
+    User.findOneAndUpdate({ email: req.params.email }, { $set: {password: await bcrypt.hash(req.params.password, 10)} },{ new: true }, (err, doc) =>
+    {
+        if (!err) { res.send(doc); }
+        else { console.log(`Error in updating user`); }
+    });
+});
 
 module.exports = app;
