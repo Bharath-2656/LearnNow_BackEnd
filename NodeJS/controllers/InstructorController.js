@@ -144,7 +144,7 @@ app.post('/token/:instructorid/:refreshtoken', async (req,res,next) =>
 {
     const instructorfortoken = await Instructor.findOne({ instructorid: req.params.instructorid }, 'instructorid').exec();
     
-    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
+    jwt.verify(req.params.refreshtoken, 'RefreshToken',
         (err, decoded) => {
             if (err)
                 return res.status(500).send({ auth: false, message: 'Token authentication failed.' });

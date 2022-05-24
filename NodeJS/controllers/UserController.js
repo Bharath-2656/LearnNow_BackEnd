@@ -15,7 +15,7 @@ const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const dotenv = require("dotenv").config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")('sk_test_51KzDD9SFGZJvDt6TYvB963ObQApw5N2P1IPcWJkwrzkfENlx2a4Ir9mFhxEdiPncNQvVSzPLQGeIDTrHYyKeSJY600yJgkFjeE');
 const cookieSession = require('cookie-session');
 var { token } = require('morgan');
 require('../Config/OAuth');
@@ -231,7 +231,7 @@ app.get('/googleauthentication/:userid', async(req, res, next) =>
 app.post('/token/:userid/:refreshtoken', async (req, res, next) =>
 {
     const userfortoken = await User.findOne({ userid: req.params.userid }, 'userid').exec();
-    jwt.verify(req.params.refreshtoken, process.env.REFRESH_TOKEN_SECRET,
+    jwt.verify(req.params.refreshtoken, 'RefreshToken',
         (err, decoded) =>
         {
             if (err)
@@ -421,7 +421,7 @@ app.post('/course_mail', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: process.env.pass,
+            pass: '@pplEisred123',
         },
         tls: {
             rejectUnauthorized: false,
@@ -459,7 +459,7 @@ app.post('/user_mail', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: process.env.pass,
+            pass: '@pplEisred123',
         },
         tls: {
             rejectUnauthorized: false,
@@ -496,7 +496,7 @@ app.get('/forgotpassword_mail/:email', async (req, res) =>
         service: "gmail",
         auth: {
             user: "bharathstarck@gmail.com",
-            pass: process.env.pass,
+            pass: '@pplEisred123',
         },
         tls: {
             rejectUnauthorized: false,
