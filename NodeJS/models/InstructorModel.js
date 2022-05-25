@@ -96,7 +96,7 @@ InstructorSchema.methods.generateJwt = function ()
   return jwt.sign({ instructorid: this.instructorid, role: 'instructor' },
     'SECRET#123',
     {
-      expiresIn: '2m'
+      expiresIn: '3m'
     });
 }
 

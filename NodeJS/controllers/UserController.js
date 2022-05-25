@@ -327,7 +327,7 @@ app.post('/payment/:price', async (req, res) =>
             {
                 //console.log(customer);
                 //return stripe.charges.create({
-                    
+            
                 return stripe.paymentIntents.create({
                     amount: req.params.price,
                     description: "Payment for course enrollment",
@@ -429,7 +429,7 @@ app.post('/course_mail', async (req, res) =>
     });
 
     let mailOptions = {
-        from: "bharath2000madhu @gmail.com",
+        from: "bharath2000madhu@gmail.com",
         to: "bharathstarck@gmail.com",
         subject: "Confirmation of enrollemnt",
         // html:{path: `http://localhost:4200/user/confirmenrollment`}
@@ -490,7 +490,7 @@ app.post('/user_mail', async (req, res) =>
 app.get('/forgotpassword_mail/:email', async (req, res) =>
 {
    var otp = Math.floor(100000 + Math.random() * 900000);
-   
+   console.log(otp);
     //link="http://"
     let transprter = nodemailer.createTransport({
         service: "gmail",
